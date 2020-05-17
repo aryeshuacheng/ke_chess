@@ -16,7 +16,7 @@ class Chess(QMainWindow):
 
         self.chess_board.start()
 
-        self.resize(180, 380)
+        self.resize(900, 900)
         self.center()
         self.setWindowTitle('Tetris')        
         self.show()
