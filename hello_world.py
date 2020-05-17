@@ -11,21 +11,36 @@ class Chess(QWidget):
     def initUI(self):
         # Initiates application UI
 
-        self.chess_board = Board(self)
-        self.chess_board.start()
+        # self.chess_board = Board(self)
+        # self.chess_board.start()
 
         chess_board_layout = QGridLayout()
         self.setLayout(chess_board_layout)
 
+        board = [[[] for x in range(8)] for y in range(8)]
+    
         # Setup board
-        for x in range(9):
-            for y in range(9):
+        for x in range(8):
+            for y in range(8):
                 if x == 1:
-                    chess_board_layout.addWidget(QPushButton("White Pawn"), x, y)
-                if x > 1 and x < 7:
-                    chess_board_layout.addWidget(QPushButton("Free Space"), x, y)
+                    board[x][y] = {"color":"White","piece":"Pawn"}
+                if x == 6:
+                    board[x][y] = {"color":"Black","piece":"Pawn"}
+                if x == 0:
+                    board[x][y] = {"color":"Blank","piece":"Blank"}
                 if x == 7:
-                    chess_board_layout.addWidget(QPushButton("Black Pawn"), x, y)
+                    board[x][y] = {"color":"Blank","piece":"Blank"}
+                if x > 1 and x < 6: 
+                    board[x][y] = {"color":"Blank","piece":"Blank"}
+
+        for x in range(8):
+            for y in range(8):
+                if board[x][y]['piece'] == 'Pawn':
+                    button = QPushButton('Pawn')
+                    chess_board_layout.addWidget(button, x, y)
+                if board[x][y]['piece'] == 'Blank':
+                    button = QPushButton('Blank')
+                    chess_board_layout.addWidget(button, x, y)
 
         self.resize(600, 600)
         self.center()
@@ -38,21 +53,10 @@ class Chess(QWidget):
         size = self.geometry()
         self.move((screen.width()-size.width())/2, 
             (screen.height()-size.height())/2)
+    def turnEvent(self):
+        # Call every time a move is made to refresh the board
+        print("Test")
 
-class Board(QFrame):
-    def __init__(self, parent):
-        super().__init__(parent)
-        
-        self.initBoard()
-
-    def initBoard(self):     
-    # Initiates board
-        self.board = []
-
-    def start(self):
-        # Starts game
-
-        self.isStarted = True
 
 # Starts the application
 if __name__ == '__main__':
