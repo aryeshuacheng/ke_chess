@@ -63,7 +63,7 @@ class Chess(QWidget):
                 if board[x][y]['piece'] == 'Pawn':
                     button = QPushButton('Pawn ({},{})'.format(x,y), self)
                     chess_board_layout.addWidget(button, x, y)
-                    button.clicked.connect(lambda ch, x=x,y=y:self.select_Pawn(x,y, board, chess_board_layout))
+                    button.clicked.connect(lambda ch, x=x,y=y:self.select_Piece(x,y, board, chess_board_layout))
                 if board[x][y]['piece'] == 'Blank':
                     button = QPushButton('Blank')
                     chess_board_layout.addWidget(button, x, y)
@@ -98,38 +98,70 @@ class Chess(QWidget):
         self.move((screen.width()-size.width())/2, 
             (screen.height()-size.height())/2)
 
-    def select_Pawn(self, current_x, current_y, board, chess_board_layout):
+    def select_Piece(self, current_x, current_y, board, chess_board_layout):
         # Draw a new board with click event for moving piece
-        print ("select_Pawn x:"+str(current_x))
-        print ("select_Pawn y:"+str(current_y))
-        self.drawAvailableMoves(current_x, current_y, board, chess_board_layout)
+    
+        self.drawAvailablePawnMoves(current_x, current_y, board, chess_board_layout)
       
 
 
-    def move_Pawn(self, new_x, new_y, current_x, current_y, board, chess_board_layout):
-        board[new_x][new_y] = {"color":"White","piece":"Pawn"}
-        board[current_x][current_y] = {"color":"Blank","piece":"Blank"}
+    def move_Pawn(self, x, y, current_x, current_y, board, chess_board_layout):
 
-        print(new_x)
-        print(new_y)
+        if board[current_x][current_y]['color'] == 'White':
+            board[x][y] = {"color":"White","piece":"Pawn"}
+            board[current_x][current_y] = {"color":"Blank","piece":"Blank"}
+        elif board[current_x][current_y]['color'] == 'Black':
+            board[x][y] = {"color":"Black","piece":"Pawn"}
+            board[current_x][current_y] = {"color":"Blank","piece":"Blank"}
+
         self.drawBoard(board,chess_board_layout)
 
        
-    def drawAvailableMoves(self, current_x, current_y, board, chess_board_layout):
+    def drawAvailablePawnMoves(self, current_x, current_y, board, chess_board_layout):
         # Called every time you make a move to update the board
-        for x in range(8):
-                for y in range(8):
-                    button = QPushButton('Move Available ({},{})'.format(x,y), self)
-                    chess_board_layout.addWidget(button, x, y)
-                    button.clicked.connect(lambda ch, x=x,y=y:self.move_Pawn(x, y, current_x, current_y, board, chess_board_layout))
+        availableMoves = []
+        
+        print(board[current_x][current_y]['color'])
+        if board[current_x][current_y]['color'] == 'White':
+            # Normal movement
+            x = current_x + 1
+            y = current_y 
+            availableMoves.append([x,y])
+
+            # Starting rush movement
+            if current_x == 1:
+                x = current_x + 2
+                y = current_y 
+                availableMoves.append([x,y])
+            availableMoves.append([x,y])
+        elif board[current_x][current_y]['color'] == 'Black':
+            # Normal movement
+            x = current_x - 1
+            y = current_y 
+            availableMoves.append([x,y])
+            # Starting rush movement
+            if current_x == 6:
+                x = current_x - 2
+                y = current_y 
+                availableMoves.append([x,y])
+
+        for availableMove in availableMoves:
+            button = QPushButton('Move Available ({},{})'.format(availableMove[0],availableMove[1]), self)
+            chess_board_layout.addWidget(button, availableMove[0],availableMove[1])
+            button.clicked.connect(lambda ch, x=availableMove[0],y=availableMove[1]:self.move_Pawn(x, y, current_x, current_y, board, chess_board_layout))
+
+    
+    def checkCollision(self):
+        # Write a method that checks for collision to prevent moving beyond what is allowed
+        print ("Write me")
         
     def drawBoard(self, board, chess_board_layout):
         for x in range(8):
             for y in range(8):
                 if board[x][y]['piece'] == 'Pawn':
-                    button = QPushButton('Pawn', self)
+                    button = QPushButton('Pawn ({},{})'.format(x,y), self)
                     chess_board_layout.addWidget(button, x, y)
-                    button.clicked.connect(lambda: self.select_Pawn(x,y, board, chess_board_layout))
+                    button.clicked.connect(lambda ch, x=x,y=y:self.select_Piece(x,y, board, chess_board_layout))
                 if board[x][y]['piece'] == 'Blank':
                     button = QPushButton('Blank')
                     chess_board_layout.addWidget(button, x, y)
